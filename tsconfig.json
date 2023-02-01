@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "lib": ["es5", "es6"],
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "./build",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "baseUrl": "./",
+    "incremental": true,
+    "paths": {
+      "@ten-kc/core": ["libs/core/src"],
+      "@ten-kc/core/*": ["libs/core/src/*"],
+      "@ten-kc/database": ["libs/database/src"],
+      "@ten-kc/database/*": ["libs/database/src/*"],
+      "@ten-kc/cache": ["libs/cache/src"],
+      "@ten-kc/cache/*": ["libs/cache/src/*"],
+      "apps/*": ["./apps/*"]
+    }
+  }
+}
