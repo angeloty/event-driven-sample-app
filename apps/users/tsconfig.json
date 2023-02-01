@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "declaration": false,
+    "outDir": "../../dist/apps/users"
+  },
+  "include": [
+    "src/**/*",
+    "../../libs/database/src/helpers",
+    "../../libs/core/src/helpers",
+    "../../libs/core/src/dtos/pagination.dto.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
