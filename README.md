@@ -2,6 +2,22 @@
 
 # SOLUTION
 
+- Tech Stack
+
+  - NodeJS(v14)
+    - Express
+    - Typescript
+    - Mongoose
+    - Reflect-metadata
+    - Jsonwebtoken
+    - Class Validator
+    - Class Transformer
+    - Jest
+    - Supertest
+  - MongoDB (v4.2)
+  - Redis (v5)
+    - Pub/Sub
+
 - INSTALLATION
   - Requirements
     - Docker
