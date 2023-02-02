@@ -1,0 +1,42 @@
+version: "3.9"
+services:
+  10kc_redis:
+    image: redis:5.0
+    container_name: 10kc_redis
+    command: redis-server
+    expose:
+      - 6379
+    ports:
+      - "6379:6379"
+  10kc_mongodb:
+    image: mongo:4.2.17
+    container_name: 10kc_mongodb
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=angel
+      - MONGO_INITDB_ROOT_PASSWORD=M0ngoDBP@ss
+      - MONGO_INITDB_DATABASE=ten-kc
+    expose:
+      - 27017
+  10kc_posts_api:
+    build:
+      context: ./
+      target: posts
+    container_name: 10kc_posts_api
+    ports:
+      - "8080:8080"
+    links:
+      - "10kc_mongodb:mongodb"
+      - "10kc_redis:redis"
+
+  10kc_users_api:
+    build:
+      context: ./
+      target: users
+    container_name: 10kc_users_api
+    ports:
+      - "80:80"
+    links:
+      - "10kc_mongodb:mongodb"
+      - "10kc_redis:redis"
