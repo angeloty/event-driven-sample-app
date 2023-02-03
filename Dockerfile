@@ -6,6 +6,8 @@ RUN npm install
 ENV APP_ENV=docker
 
 FROM base as posts
+RUN mkdir -p /usr/src/app/public/uploads
+RUN chmod -R 777 /usr/src/app/public/uploads
 ENV PORT=8080
 EXPOSE 8080
 CMD [ "npm", "run", "start:posts" ]

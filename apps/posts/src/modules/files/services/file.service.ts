@@ -50,7 +50,9 @@ export class FileService {
       if (err instanceof BaseException) {
         throw err;
       }
-      throw new BadRquestException(err.message);
+      throw new BadRquestException(
+        `File Data Currupted or Missed: ${err.message}`
+      );
     }
   }
 }

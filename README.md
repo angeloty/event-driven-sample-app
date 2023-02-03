@@ -24,7 +24,9 @@
   - Commands
     > docker compose up -d
 - TEST
+  - Note: Databas and Redis must be online, and apps(users and posts microservices) must be offline.
   - Post Microservice
+    > docker stop 10kc_posts_api 10kc_users_api
     > npm run test:posts
   - User Microservice
     > npm run test:users
@@ -49,9 +51,6 @@
       |                                                               |
       |                 Database Manager (MongoDB)                    |
       |_______________________________________________________________|
-
-
-
 
 # Bootcamp - Backend
 
