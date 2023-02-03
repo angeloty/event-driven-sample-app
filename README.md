@@ -19,6 +19,19 @@
   - MongoDB (v4.2)
   - Redis (v5)
     - Pub/Sub
+  - Docker
+    - Docker Compose
+
+- Practices
+
+  - Monorepo
+  - Microservice
+  - Event-Driven Architecture
+  - Dependency Injection(Decorators)
+  - Unit Tests(Event Simulation)
+  - Redis PubSub
+  - Adapter Pattern
+  - Reflection
 
 - INSTALLATION
   - Requirements
