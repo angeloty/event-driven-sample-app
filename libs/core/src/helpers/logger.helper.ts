@@ -1,3 +1,4 @@
+import "reflect-metadata";
 const colors = {
   red: "\x1b[31m%s\x1b[0m",
   green: "\x1b[32m%s\x1b[0m",
@@ -13,6 +14,10 @@ export class Logger {
     message: string,
     color: "yellow" | "green" | "red" | "magenta" | "blue" = "blue"
   ) {
+    const testing = Logger.constructor.prototype.testing;
+    if (testing) {
+      return;
+    }
     console.log(
       `${colors.yellow.replace("%s", new Date().toISOString())}`,
       `${colors.blue.replace("%s", module)} => `,
@@ -24,6 +29,10 @@ export class Logger {
     message: string,
     color: "yelow" | "green" | "red" | "magenta" | "blue" = "green"
   ) {
+    const testing = Logger.constructor.prototype.testing;
+    if (testing) {
+      return;
+    }
     console.info(
       `${colors.yellow.replace("%s", new Date().toISOString())}`,
       `${colors.cyan.replace("%s", module)} => `,
@@ -35,6 +44,11 @@ export class Logger {
     message: string,
     color: "yelow" | "green" | "red" | "magenta" | "blue" = "red"
   ) {
+    /*const testing = Logger.constructor.prototype.testing;
+    if (testing) {
+      console.error(`${new Date().toISOString()} :: ${module} => ${message}`);
+      return;
+    }*/
     console.error(
       `${colors.yellow.replace("%s", new Date().toISOString())}`,
       `${colors.magenta.replace("%s", module)} => `,

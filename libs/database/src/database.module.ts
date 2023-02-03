@@ -10,7 +10,18 @@ export class DatabaseModule extends BaseModule {
       controllers: [],
     });
   }
-  static manager(db?: DBManagerService, testing = false): DBManagerService {
+  async destroy(): Promise<void> {
+    const db: DBManagerService = DatabaseModule.manager();
+    await db.unregister();
+    await super.destroy();
+    return;
+  }
+  async clean(): Promise<void> {
+    const db: DBManagerService = DatabaseModule.manager();
+    await db.clean();
+    return;
+  }
+  static manager(db?: DBManagerService): DBManagerService {
     db =
       db || Reflect.getMetadata("$_db", DatabaseModule.constructor.prototype);
     if (!db) {
@@ -21,11 +32,12 @@ export class DatabaseModule extends BaseModule {
   }
   static async register(config: IDBConfig): Promise<IBaseModuleContructor> {
     const db: DBManagerService = DatabaseModule.manager();
-    db.register(config);
+    await db.register(config);
     DatabaseModule.manager(db);
     return DatabaseModule;
   }
   async init(app: express.Express): Promise<express.Express> {
+    this.app = app || this.app;
     return this.app;
   }
   static registerModel<T, TMethods, TVirtuals>(

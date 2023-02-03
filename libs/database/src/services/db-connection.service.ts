@@ -1,18 +1,38 @@
 import * as mongoose from "mongoose";
 import { BaseModel, Logger } from "@ten-kc/core";
 import { IDBConfig } from "../interfaces/db.interfaces";
+import { DBBaseConnectionService } from "./db-base-connection.service";
+import { connect } from "http2";
 
-export class DBConnectionService {
-  connection: mongoose.Connection;
-  models: { [key: string]: BaseModel<any, any, any> };
-  constructor(protected config: IDBConfig) {}
+export class DBConnectionService extends DBBaseConnectionService {
+  constructor(protected config: IDBConfig) {
+    super(config);
+  }
   get name(): string {
     return this.config.name;
   }
   async register(): Promise<void> {
-    const { host, port, dbName, password, user, models } = this.config;
+    await this.connect();
+    const { host, port, dbName, name, models } = this.config;
+    this.connection.on("error", (err) => {
+      Logger.error(`Core:Database:Connection`, `${err.name}: ${err.message}`);
+    });
+    this.connection.on("connected", () => {
+      Logger.info(
+        `Core:Database:Connection`,
+        `DB Connected (${name}): ${host}:${port}/${dbName}`
+      );
+    });
+    (models || []).forEach((Model) => {
+      this.registerModel(Model);
+    });
+    return;
+  }
+
+  async connect() {
+    const { host, port, dbName, password, user } = this.config;
     let { uri, name } = this.config;
-    name = name || "default";
+    this.config.name = name = name || "default";
     let options: mongoose.ConnectOptions = {
       dbName,
     };
@@ -26,19 +46,36 @@ export class DBConnectionService {
     if (user && password) {
       options = { ...options, user, pass: password };
     }
-    this.connection = mongoose.createConnection(uri, options);
-    this.connection.on("error", (err) => {
-      Logger.error(`Core:Database:Connection`, `${err.name}: ${err.message}`);
-    });
-    this.connection.on("connected", () => {
-      Logger.info(
-        `Core:Database:Connection`,
-        `DB Connected (${name}): ${host}:${port}/${dbName}`
-      );
-    });
-    (models || []).forEach((Model) => {
-      this.registerModel(Model);
-    });
+    if (this.db) {
+      await this.db.connect(uri, options);
+    } else {
+      mongoose.set("strictQuery", true);
+      this.db = await mongoose.connect(uri, options);
+    }
+    this.connection =
+      this.db.connection || mongoose.createConnection(uri, options);
+  }
+
+  async unregister(): Promise<void> {
+    await this.closeDatabase();
+    return;
+  }
+
+  async clean(): Promise<void> {
+    return;
+  }
+  async closeDatabase(): Promise<void> {
+    await this.connection.close();
+    return;
+  }
+
+  async clearDatabase(): Promise<void> {
+    const collections = this.connection.collections;
+
+    for (const key in collections) {
+      const collection = collections[key];
+      await collection.deleteMany({});
+    }
     return;
   }
 

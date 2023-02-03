@@ -1,0 +1,11 @@
+{
+  "name": "posts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.ts",
+  "scripts": {
+    "test": "ts-jest"
+  },
+  "author": "Angel Sanchez",
+  "license": "ISC"
+}
