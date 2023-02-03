@@ -1,0 +1,639 @@
+{
+	"info": {
+		"_postman_id": "19f962c4-7d66-425f-af51-ba51b1084a9b",
+		"name": "10KC Bootcamp(Backed)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12491017"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Login",
+					"item": [
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const resp = pm.response.json();",
+											"if(resp.token) {",
+											"    pm.collectionVariables.set(\"token\", resp.token)",
+											"    pm.collectionVariables.set(\"refreshToken\", resp.refreshToken)",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"sub\": \"angeloty13x+{{userIteration}}@gmail.com\",\n    \"secret\": \"Angel@123\",\n    \"provider\": \"local\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{userURL}}auth/login",
+									"host": [
+										"{{userURL}}auth"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Refresh Token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const resp = pm.response.json();",
+											"if(resp.token) {",
+											"    pm.collectionVariables.set(\"token\", resp.token)",
+											"    pm.collectionVariables.set(\"refreshToken\", resp.refreshToken)",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{userURL}}auth/refresh?refresh={{refreshToken}}",
+									"host": [
+										"{{userURL}}auth"
+									],
+									"path": [
+										"refresh"
+									],
+									"query": [
+										{
+											"key": "refresh",
+											"value": "{{refreshToken}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const resp = pm.response.json();",
+									"if(resp.id) {",
+									"    pm.collectionVariables.set(\"userId\", resp.id)",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"userIteration\", Number(pm.collectionVariables.get(\"userIteration\") || 0) + 1);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"angeloty13x+{{userIteration}}@gmail.com\",\n    \"email\": \"angeloty13x+{{userIteration}}@gmail.com\",\n    \"credentials\": {\n        \"sub\": \"angeloty13x+{{userIteration}}@gmail.com\",\n        \"secret\": \"Angel@123\",\n        \"provider\": \"local\"\n    },\n    \"profile\": {\n        \"firstName\": \"Angel{{userIteration}}\",\n        \"lastName\": \"Sanchez\",\n        \"avatar\": \"https://gravatar.com/avatar/b30486419355e533bdbf495af659b54c?s=400&d=robohash&r=x\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{userURL}}users",
+							"host": [
+								"{{userURL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const resp = pm.response.json();",
+									"if(resp.data.length) {",
+									"    pm.collectionVariables.set(\"userId\", resp.data[0].id)",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{userURL}}users?skip=0&limit=10&filter[name]=angel",
+							"host": [
+								"{{userURL}}users"
+							],
+							"query": [
+								{
+									"key": "skip",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "filter[name]",
+									"value": "angel"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{userURL}}users/{{userId}}",
+							"host": [
+								"{{userURL}}users"
+							],
+							"path": [
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Posts",
+			"item": [
+				{
+					"name": "Comments",
+					"item": [
+						{
+							"name": "Get Comments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const resp = pm.response.json();",
+											"if(resp.data.length) {",
+											"    pm.collectionVariables.set(\"commentId\", resp.data[0].id)",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{postURL}}posts/{{postId}}/comments?skip=0&limit=10",
+									"host": [
+										"{{postURL}}posts"
+									],
+									"path": [
+										"{{postId}}",
+										"comments"
+									],
+									"query": [
+										{
+											"key": "skip",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "filter[text]",
+											"value": "test",
+											"disabled": true
+										},
+										{
+											"key": "filter[owned]",
+											"value": "true",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetComment",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{postURL}}posts/{{postId}}/comments/{{commentId}}",
+									"host": [
+										"{{postURL}}posts"
+									],
+									"path": [
+										"{{postId}}",
+										"comments",
+										"{{commentId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Comment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"",
+											"const resp = pm.response.json();",
+											"if(resp.id) {",
+											"    pm.collectionVariables.set(\"commentId\", resp.id)",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"commentIteration\", Number(pm.collectionVariables.get(\"commentIteration\") || 0) + 1);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Test Comment( @10kc ) #{{commentIteration}}\",\n    \"content\": \"Lorem ipsum Test{{commentIteration}} @angel #test{{commentIteration}} @10kc #10kc\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{postURL}}posts/{{postId}}/comments",
+									"host": [
+										"{{postURL}}posts"
+									],
+									"path": [
+										"{{postId}}",
+										"comments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Comment",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{postURL}}posts/{{postId}}/comments/{{commentId}}",
+									"host": [
+										"{{postURL}}posts"
+									],
+									"path": [
+										"{{postId}}",
+										"comments",
+										"{{commentId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Posts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const resp = pm.response.json();",
+									"if(resp.data.length) {",
+									"    pm.collectionVariables.set(\"postId\", resp.data[0].id)",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{postURL}}posts?skip=0&limit=10",
+							"host": [
+								"{{postURL}}posts"
+							],
+							"query": [
+								{
+									"key": "skip",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "filter[text]",
+									"value": "test",
+									"disabled": true
+								},
+								{
+									"key": "filter[creator]",
+									"value": "{{userId}}",
+									"disabled": true
+								},
+								{
+									"key": "filter[owned]",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Post",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{postURL}}posts/{{postId}}",
+							"host": [
+								"{{postURL}}posts"
+							],
+							"path": [
+								"{{postId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Post",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"const resp = pm.response.json();",
+									"if(resp.id) {",
+									"    pm.collectionVariables.set(\"postId\", resp.id)",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"postIteration\", Number(pm.collectionVariables.get(\"postIteration\") || 0) + 1);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test Post( @10kc ) #{{postIteration}}\",\n    \"content\": \"Lorem ipsum Test{{postIteration}} @angel #test{{postIteration}} @10kc #10kc\",\n    \"isPublic\": true,\n    \"medias\": [{\n        \"title\": \"Media-{{postIteration}}\",\n        \"description\": \"Mesdia Desc #{{postIteration}}\",\n        \"url\": \"https://gravatar.com/avatar/b30486419355e533bdbf495af659b54c?s=400&d=robohash&r=x\"\n    }],\n    \"metadata\": [{\n        \"attribute\": \"collaborator\",\n        \"value\": \"Angel\"\n    }]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{postURL}}posts",
+							"host": [
+								"{{postURL}}posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Post and Upload File",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"const resp = pm.response.json();",
+									"if(resp.id) {",
+									"    pm.collectionVariables.set(\"postId\", resp.id)",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"postIteration\", Number(pm.collectionVariables.get(\"postIteration\") || 0) + 1);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "title",
+									"value": "Test Post( @10kc ) #{{postIteration}}",
+									"type": "text"
+								},
+								{
+									"key": "content",
+									"value": "Lorem ipsum Test{{postIteration}} @angel #test{{postIteration}} @10kc #10kc",
+									"type": "text"
+								},
+								{
+									"key": "isPublic",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "metadata",
+									"value": "[{\"attribute\": \"collaborator\", \"value\": \"Angel\"}]",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{postURL}}posts/form",
+							"host": [
+								"{{postURL}}posts"
+							],
+							"path": [
+								"form"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Post",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{postURL}}posts/{{postId}}",
+							"host": [
+								"{{postURL}}posts"
+							],
+							"path": [
+								"{{postId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "userURL",
+			"value": "http://localhost/",
+			"type": "string"
+		},
+		{
+			"key": "postURL",
+			"value": "http://localhost:8080/",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "postIteration",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "userIteration",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "postId",
+			"value": ""
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		},
+		{
+			"key": "commentIteration",
+			"value": ""
+		},
+		{
+			"key": "commentId",
+			"value": ""
+		}
+	]
+}

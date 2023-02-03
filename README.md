@@ -2,6 +2,8 @@
 
 # SOLUTION
 
+- Postman Collection is shared as part of the code
+
 - Tech Stack
 
   - NodeJS(v14)
