@@ -69,7 +69,7 @@
 
 # Bootcamp - Backend
 
-Now you understand (at least a little) Node.js, Express, and MongoDB. All of these pieces work together to make up the stable, scalable, and maintainable web application development stack that we use at 10KC.
+Stack Node.js, Express, and MongoDB. All of these pieces work together to make up the stable, scalable, and maintainable web application.
 
 # Your Challenge
 
@@ -86,7 +86,3 @@ Now you understand (at least a little) Node.js, Express, and MongoDB. All of the
   - Response pagination
   - Request validation
   - Unit testing with Jest should be demonstrated (code coverage does not need to be 100%, just enough to show understanding)
-
-# Submission
-
-The source code for the photo sharing API should be shared with the team at 10KC once it is completed.
