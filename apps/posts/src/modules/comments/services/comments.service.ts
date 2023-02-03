@@ -1,4 +1,11 @@
+import {
+  BadRquestException,
+  BaseException,
+  NotFoundException,
+  UnauthorizedException,
+} from "@ten-kc/core";
 import { plainToClass, plainToInstance } from "class-transformer";
+import e = require("express");
 import * as mongoose from "mongoose";
 import { getModel } from "../../../../../../libs/database/src/helpers/database.helper";
 import { PostService } from "../../posts/services/post.service";
@@ -27,7 +34,7 @@ export class CommentsService {
   ): Promise<CommentListOutput> {
     try {
       if (!user) {
-        throw new Error(`Unauthorized`);
+        throw new UnauthorizedException(`Unauthorized`);
       }
       params = plainToClass(GetCommentListInput, params);
       await params.validate();
@@ -96,19 +103,22 @@ export class CommentsService {
         params,
       });
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new BadRquestException(err.message);
     }
   }
 
   async getComment(user: CreatorOutput, id: string): Promise<CommentOutput> {
     try {
       if (!user) {
-        throw new Error(`Unauthorized`);
+        throw new UnauthorizedException(`Unauthorized`);
       }
       const model: CommentModel = getModel(CommentModel);
       const comment: Comment = await model.findById(id).populate("post").exec();
       if (!comment) {
-        throw new Error(`Comment(${id}) not found.`);
+        throw new NotFoundException(`Comment(${id}) not found.`);
       }
       const userService: UserService = new UserService();
       const creator: CreatorOutput = await userService.getUserById(
@@ -118,7 +128,10 @@ export class CommentsService {
         creator,
       });
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new BadRquestException(err.message);
     }
   }
 
@@ -148,7 +161,10 @@ export class CommentsService {
       comment = await model.insert(comment);
       return await this.getComment(user, comment.id);
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new BadRquestException(err.message);
     }
   }
 
@@ -158,7 +174,7 @@ export class CommentsService {
   ): Promise<DeleteCommentOutput> {
     try {
       if (!user) {
-        throw new Error(`Unauthorized`);
+        throw new UnauthorizedException(`Unauthorized`);
       }
       const model: CommentModel = getModel(CommentModel);
       const comment: Comment = await model
@@ -168,11 +184,14 @@ export class CommentsService {
         })
         .exec();
       if (!comment) {
-        throw new Error(`Comment(${id}) not found.`);
+        throw new NotFoundException(`Comment(${id}) not found.`);
       }
       return new DeleteCommentOutput({ success: true });
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new BadRquestException(err.message);
     }
   }
 }

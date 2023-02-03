@@ -1,5 +1,6 @@
 import { Response } from "express";
 import {
+  BaseException,
   BaseRestController,
   Controller,
   Delete,
@@ -35,6 +36,9 @@ export class CommentsController extends BaseRestController {
       resp.status(200).send(response);
       return;
     } catch (err) {
+      if (err instanceof BaseException) {
+        return err.send(resp);
+      }
       resp.status(500).send(err.message);
       return;
     }
@@ -50,6 +54,9 @@ export class CommentsController extends BaseRestController {
       resp.status(200).send(response);
       return;
     } catch (err) {
+      if (err instanceof BaseException) {
+        return err.send(resp);
+      }
       resp.status(500).send(err.message);
       return;
     }
@@ -67,6 +74,9 @@ export class CommentsController extends BaseRestController {
       resp.status(201).send(response);
       return;
     } catch (err) {
+      if (err instanceof BaseException) {
+        return err.send(resp);
+      }
       resp.status(400).send(err.message);
       return;
     }
@@ -82,6 +92,9 @@ export class CommentsController extends BaseRestController {
       resp.status(200).send(response);
       return;
     } catch (err) {
+      if (err instanceof BaseException) {
+        return err.send(resp);
+      }
       resp.status(500).send(err.message);
       return;
     }

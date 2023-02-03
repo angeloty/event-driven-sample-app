@@ -1,10 +1,15 @@
 import { getCacheClient as getPubSub, PubSub } from "@ten-kc/cache";
 import { v4 } from "uuid";
 import {
+  BadRquestException,
+  BaseException,
+  ConflictException,
   Logger,
+  NotFoundException,
   PubSubErrorResponse,
   PubSubPayload,
   PubSubResponse,
+  UnauthorizedException,
 } from "@ten-kc/core";
 import { CreatorOutput } from "../dtos/creator.dto";
 export enum AUTH_PUB_EVENTS {
@@ -95,7 +100,7 @@ export class UserService {
   async getUserByToken(token: string): Promise<CreatorOutput> {
     try {
       if (!token) {
-        throw new Error(`Unauthorized`);
+        throw new UnauthorizedException(`Unauthorized`);
       }
       return await this.subscribe<{ token: string }, CreatorOutput>({
         event: AUTH_PUB_EVENTS.TOKEN,
@@ -106,7 +111,10 @@ export class UserService {
         error: AUTH_SUB_EVENTS.TOKEN_ERROR,
       });
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new UnauthorizedException(err.message);
     }
   }
   async getUserByIds(ids: string[]): Promise<CreatorOutput[]> {
@@ -123,7 +131,10 @@ export class UserService {
         error: USER_SUB_EVENTS.LIST_ERROR,
       });
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new ConflictException(err.message);
     }
   }
   async getUserById(id: string): Promise<CreatorOutput> {
@@ -140,7 +151,10 @@ export class UserService {
         error: USER_SUB_EVENTS.GET_ERROR,
       });
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new NotFoundException(err.message);
     }
   }
 }

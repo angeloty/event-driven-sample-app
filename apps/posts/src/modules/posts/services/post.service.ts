@@ -1,3 +1,8 @@
+import {
+  BadRquestException,
+  BaseException,
+  NotFoundException,
+} from "@ten-kc/core";
 import { plainToClass, plainToInstance } from "class-transformer";
 import { Response } from "express";
 import { FilterQuery } from "mongoose";
@@ -109,7 +114,10 @@ export class PostService {
         params,
       });
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new BadRquestException(err.message);
     }
   }
 
@@ -119,10 +127,13 @@ export class PostService {
     asDocument = false
   ): Promise<PostOutput | Post> {
     try {
+      if (!user) {
+        throw new Error(`Unauthorized.`);
+      }
       const model: PostModel = getModel(PostModel);
       const post: Post = await model.findById(id).exec();
       if (!post) {
-        throw new Error(`Post(${id}) not found.`);
+        throw new NotFoundException(`Post(${id}) not found.`);
       }
       if (asDocument) {
         return post;
@@ -133,7 +144,10 @@ export class PostService {
       );
       return model.toResponse<PostOutput>(PostOutput, post, { creator });
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new BadRquestException(err.message);
     }
   }
 
@@ -155,7 +169,10 @@ export class PostService {
 
       return (await this.getPost(user, post.id)) as PostOutput;
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new BadRquestException(err.message);
     }
   }
 
@@ -180,10 +197,12 @@ export class PostService {
       });
       post.processTags();
       post = await model.insert(post);
-      console.log(post);
       return await this.getPost(user, post.id || post["_id"], asDocument);
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new BadRquestException(err.message);
     }
   }
 
@@ -200,11 +219,14 @@ export class PostService {
         })
         .exec();
       if (!post) {
-        throw new Error(`Post(${id}) not found.`);
+        throw new NotFoundException(`Post(${id}) not found.`);
       }
       return new DeletePostOutput({ success: true });
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new BadRquestException(err.message);
     }
   }
 }

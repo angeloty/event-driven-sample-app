@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
-import { BaseRestController, Controller, Get, Post } from "@ten-kc/core";
 import {
-  GetUsersInput,
-  UserListOutput,
-  UserOutput,
-} from "../../shared/dtos/user.dto";
+  BaseException,
+  BaseRestController,
+  Controller,
+  Get,
+  Post,
+} from "@ten-kc/core";
+import { UserListOutput, UserOutput } from "../../shared/dtos/user.dto";
 import { UserService } from "../services/user.service";
-import { CreateUserInput } from "../dtos/user.dto";
 import { AuthenticationMiddleware } from "../../shared/middleware/auth.middleware";
 import { AuthRequest } from "../../shared/dtos/request.dto";
 
@@ -27,6 +28,9 @@ export class UserController extends BaseRestController {
       resp.status(200).send(response);
       return;
     } catch (err) {
+      if (err instanceof BaseException) {
+        return err.send(resp);
+      }
       resp.status(500).send(err.message);
       return;
     }
@@ -39,6 +43,9 @@ export class UserController extends BaseRestController {
       resp.status(200).send(response);
       return;
     } catch (err) {
+      if (err instanceof BaseException) {
+        return err.send(resp);
+      }
       resp.status(500).send(err.message);
       return;
     }
@@ -46,10 +53,15 @@ export class UserController extends BaseRestController {
   @Post("")
   async createUser(req: Request, resp: Response): Promise<void> {
     try {
-      const response: UserOutput = await this.service.createUser(req.body);
+      const response: UserOutput = (await this.service.createUser(
+        req.body
+      )) as UserOutput;
       resp.status(201).send(response);
       return;
     } catch (err) {
+      if (err instanceof BaseException) {
+        return err.send(resp);
+      }
       resp.status(400).send(err.message);
       return;
     }

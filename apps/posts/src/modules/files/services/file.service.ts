@@ -1,4 +1,4 @@
-import { BaseDTO } from "@ten-kc/core";
+import { BadRquestException, BaseDTO, BaseException } from "@ten-kc/core";
 import { Request, Response } from "express";
 import { join } from "path";
 import { MediaInput } from "../../posts/dtos/post.dto";
@@ -47,7 +47,10 @@ export class FileService {
       const media: MediaInput = await this.provider.upload(file, config);
       return media;
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new BadRquestException(err.message);
     }
   }
 }

@@ -1,3 +1,9 @@
+import {
+  BadRquestException,
+  BaseException,
+  NotFoundException,
+  UnauthorizedException,
+} from "@ten-kc/core";
 import { getModel } from "@ten-kc/database";
 import { plainToClass } from "class-transformer";
 import { decode, JwtPayload, sign, verify } from "jsonwebtoken";
@@ -63,16 +69,21 @@ export class AuthService {
         })
         .exec();
       if (!user) {
-        throw new Error(`User(${sub})not found for provider "${provider}"`);
+        throw new NotFoundException(
+          `User(${sub})not found for provider "${provider}"`
+        );
       }
       if (!(await this.provider.validate(user, params))) {
-        throw new Error(
+        throw new UnauthorizedException(
           `Invalid credentials for User(${sub}) and provider "${provider}"`
         );
       }
       return this.createTokens(user, params);
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new UnauthorizedException(err.message);
     }
   }
 
@@ -87,7 +98,7 @@ export class AuthService {
       }
       const { sub, provider, ...decoded } = decode(token, { json: true }) || {};
       if (key !== decoded?.key) {
-        throw new Error(`Signature doesn't match`);
+        throw new BadRquestException(`Signature doesn't match`);
       }
       const model: UserModel = getModel(UserModel);
       const user: User = await model
@@ -97,11 +108,16 @@ export class AuthService {
         })
         .exec();
       if (!user) {
-        throw new Error(`User(${sub})not found for provider "${provider}"`);
+        throw new NotFoundException(
+          `User(${sub})not found for provider "${provider}"`
+        );
       }
       return this.createTokens(user, { sub, provider } as GetAuthInput);
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new UnauthorizedException(err.message);
     }
   }
 
@@ -113,7 +129,7 @@ export class AuthService {
       const { sub, provider, id } =
         (verify(token, this.tokenKey) as JwtPayload) || {};
       if (!sub || !id || !provider) {
-        throw new Error(`Invalid Token`);
+        throw new UnauthorizedException(`Invalid Token`);
       }
       const model: UserModel = getModel(UserModel);
       const user: User = await model
@@ -124,7 +140,7 @@ export class AuthService {
         })
         .exec();
       if (!user) {
-        throw new Error(
+        throw new UnauthorizedException(
           `User(${id} => ${sub})not found for provider "${provider}"`
         );
       }
@@ -133,7 +149,10 @@ export class AuthService {
       }
       return user;
     } catch (err) {
-      throw err;
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new UnauthorizedException(err.message);
     }
   }
 

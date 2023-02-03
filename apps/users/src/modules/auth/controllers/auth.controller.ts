@@ -1,5 +1,11 @@
 import { Request, Response } from "express";
-import { BaseRestController, Controller, Get, Post } from "@ten-kc/core";
+import {
+  BaseException,
+  BaseRestController,
+  Controller,
+  Get,
+  Post,
+} from "@ten-kc/core";
 import { AuthOutput, GetRefreshInput } from "../dtos/auth.dto";
 import { AuthService } from "../services/auth.service";
 import { getBearerToken } from "../../../../../../libs/core/src/helpers/auth.helper";
@@ -16,6 +22,9 @@ export class AuthController extends BaseRestController {
       resp.status(200).send(response);
       return;
     } catch (err) {
+      if (err instanceof BaseException) {
+        return err.send(resp);
+      }
       resp.status(400).send(err.message);
       return;
     }
@@ -31,6 +40,9 @@ export class AuthController extends BaseRestController {
       resp.status(200).send(response);
       return;
     } catch (err) {
+      if (err instanceof BaseException) {
+        return err.send(resp);
+      }
       resp.status(400).send(err.message);
       return;
     }

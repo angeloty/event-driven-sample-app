@@ -23,6 +23,35 @@
     - Docker
   - Commands
     > docker compose up -d
+- TEST
+  - Post Microservice
+    > npm run test:posts
+  - User Microservice
+    > npm run test:users
+
+# ARCHITECTURE
+
+       _______________________________________________________________
+      |                                                               |
+      |                         Core Library                          |
+      |_______________________________________________________________|
+             ||                                             ||
+             ||                                             ||
+     __________________   ________________________    _________________
+    |                  | | CACHE / EVENT MANAGER  |  |                  |
+    |  Posts/Comments  | |                        |  |    User/Auth     |
+    | - Post Management| <====> REDIS PUB/SUB <====> | - User Management|
+    | - File Management|                             | - Authentication |
+    | - Comments       |                             |                  |
+    |__________________|                             |__________________|
+             ||                                             ||
+       _______________________________________________________________
+      |                                                               |
+      |                 Database Manager (MongoDB)                    |
+      |_______________________________________________________________|
+
+
+
 
 # Bootcamp - Backend
 
