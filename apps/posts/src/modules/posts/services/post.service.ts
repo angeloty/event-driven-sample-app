@@ -1,6 +1,7 @@
 import {
   BadRquestException,
   BaseException,
+  ForbiddenException,
   NotFoundException,
 } from "@ten-kc/core";
 import { plainToClass, plainToInstance } from "class-transformer";
@@ -16,6 +17,7 @@ import {
 } from "../../shared/dtos/request.dto";
 import {
   Post,
+  PostMedia,
   PostModel,
   PostStaticMethods,
 } from "../../shared/models/post.model";
@@ -212,15 +214,26 @@ export class PostService {
         throw new Error(`Unauthorized`);
       }
       const model: PostModel = getModel(PostModel);
-      const post: Post = await model
+      const post: Post = await model.findById(id).exec();
+
+      if (!post) {
+        throw new NotFoundException(`Post(${id}) not found.`);
+      }
+      if (post.creator !== user.id) {
+        throw new ForbiddenException(`You can't remove post(${post.id})`);
+      }
+      const fileService = new FileService();
+      await model
         .findOneAndDelete({
           id,
           creator: user.id,
         })
         .exec();
-      if (!post) {
-        throw new NotFoundException(`Post(${id}) not found.`);
-      }
+      await Promise.all(
+        (post.medias || []).map(async (media: PostMedia) => {
+          return await fileService.remove(media as MediaInput, {});
+        })
+      );
       return new DeletePostOutput({ success: true });
     } catch (err) {
       if (err instanceof BaseException) {

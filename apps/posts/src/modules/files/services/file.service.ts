@@ -38,7 +38,7 @@ export class FileService {
     this.initProvider();
     return this._provider;
   }
-  async upload<P extends BaseDTO>(
+  async upload(
     file: IFile,
     config?: Partial<BaseProviderConfig<any>>
   ): Promise<MediaInput> {
@@ -46,6 +46,22 @@ export class FileService {
       await this.provider.prepare();
       const media: MediaInput = await this.provider.upload(file, config);
       return media;
+    } catch (err) {
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new BadRquestException(
+        `File Data Currupted or Missed: ${err.message}`
+      );
+    }
+  }
+  async remove(
+    file: MediaInput,
+    config?: Partial<BaseProviderConfig<any>>
+  ): Promise<void> {
+    try {
+      await this.provider.prepare();
+      return await this.provider.remove(file, config);
     } catch (err) {
       if (err instanceof BaseException) {
         throw err;

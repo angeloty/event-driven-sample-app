@@ -1,3 +1,4 @@
+import { BaseException, NotFoundException } from "@ten-kc/core";
 import {
   existsSync,
   mkdirSync,
@@ -53,5 +54,30 @@ export class LocalFileProvider extends BaseFileProvider<LocalFileUploaderConfig>
       description: "",
       id,
     } as MediaInput);
+  }
+  remove(
+    { title, url }: MediaInput,
+    config: Partial<BaseProviderConfig<LocalFileUploaderConfig>>
+  ): Promise<void> {
+    try {
+      const path = join(
+        config.basePath ||
+          this.config.basePath ||
+          join(process.cwd(), "public/uploads"),
+        url.replace("public", "")
+      );
+      if (!existsSync(path)) {
+        throw new NotFoundException(
+          `File "${title}" not found on location "${path}"`
+        );
+      }
+      unlinkSync(path);
+      return;
+    } catch (err) {
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      throw new NotFoundException(err.message);
+    }
   }
 }
