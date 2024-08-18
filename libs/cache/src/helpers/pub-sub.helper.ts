@@ -85,7 +85,7 @@ export class PubSub {
   async error(event: string, message: PubSubErrorResponse) {
     Logger.error(
       `Core:Cache:PubSub`,
-      `[Publisher] Publishing error (Topic: "${event}")`
+      `[Publisher] Publishing error (Topic: "${event}") => ${message}`
     );
     return this.pub.publish(event, JSON.stringify(message));
   }
